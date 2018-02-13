@@ -42,7 +42,7 @@ dbGetQuery(dataset.conn, "CREATE TABLE participants(
   championid INT,
   ss1 INT,
   ss2 INT,
-  role INT,
+  role TEXT,
   position TEXT, 
   row_names TEXT)")
 dbGetQuery(dataset.conn, "CREATE INDEX participants_championid_index ON participants (championid)")
