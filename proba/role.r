@@ -74,4 +74,7 @@ dataset_role.compute_main = function() {
 
 dataset_role.file = "Data/Understanding/proba_main.csv"
 dataset_role.main = dataset_role.compute_main()
+dataset_role.main["Name"] = row.names(dataset_role.main)
+dataset_role.main = dataset_role.main[order(row.names(dataset_role.main)), ]
+dataset_role.main["Name"] = NULL
 dataset.debug(dataset_role.main)
