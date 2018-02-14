@@ -31,8 +31,14 @@ dataset.query = "SELECT matches.id, banturn, teamid, champs.name FROM matches, t
 dataset_bans.data = dataset.export()
 dataset.debug(dataset_bans.data)
 
-dataset.file = "Data/Understanding/proba_big_stats.csv"
-dataset.query = "SELECT champs.name, trinket, kills, deaths, assists, largestkillingspree, largestmultikill, killingsprees, longesttimespentliving, doublekills, triplekills, quadrakills, pentakills, legendarykills, totdmgdealt, magicdmgdealt, physicaldmgdealt, truedmgdealt, largestcrit, totdmgtochamp, magicdmgtochamp, physdmgtochamp, truedmgtochamp, totheal, totunitshealed, dmgselfmit, dmgtoobj, dmgtoturrets, visionscore, timecc, totdmgtaken, magicdmgtaken, physdmgtaken, truedmgtaken, goldearned, goldspent, turretkills, inhibkills, totminionskilled, neutralminionskilled, ownjunglekills, enemyjunglekills, totcctimedealt, champlvl, pinksbought, wardsbought, wardsplaced, wardskilled, firstblood FROM matches, participants, champs, stats WHERE matches.id = participants.matchid AND participants.championid = champs.id AND stats.id = participants.id AND seasonid = 8"
+dataset.file = "Data/Understanding/proba_stats.csv"
+dataset.query = "SELECT champs.name, trinket, kills, deaths, assists, largestkillingspree, largestmultikill, killingsprees, longesttimespentliving, doublekills, triplekills, quadrakills, pentakills, legendarykills, totdmgdealt, magicdmgdealt, physicaldmgdealt, truedmgdealt, largestcrit, totdmgtochamp, magicdmgtochamp, physdmgtochamp, truedmgtochamp, totheal, totunitshealed, dmgselfmit, dmgtoobj, dmgtoturrets, visionscore, totdmgtaken, magicdmgtaken, physdmgtaken, truedmgtaken, goldearned, goldspent, turretkills, inhibkills, totminionskilled, neutralminionskilled, ownjunglekills, enemyjunglekills, totcctimedealt, champlvl, pinksbought, wardsplaced, wardskilled, firstblood FROM matches, participants, champs, stats WHERE matches.id = participants.matchid AND participants.championid = champs.id AND stats.id = participants.id AND seasonid = 8"
 dataset_stats.data = dataset.export()
 dataset_stats.data = na.omit(dataset_stats.data)
 dataset.debug(dataset_stats.data)
+
+dataset.file = "Data/Understanding/proba_role.csv"
+dataset.query = "SELECT champs.name, role, position FROM matches, participants, champs WHERE matches.id = matchid AND seasonid = 8 AND championid = champs.id"
+dataset_role.data = dataset.export()
+dataset.debug(dataset_role.data)
+
