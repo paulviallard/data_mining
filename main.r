@@ -1,7 +1,18 @@
 #!/usr/bin/env Rscript
 
 library(ggplot2)
+library(rgl)
 library(reshape2)
+
+library(arules)
+
+library(rpart)
+library(rpart.plot)
+library(randomForest)
+
+library(e1071)
+
+library(caret)
 
 rm(list=ls())
 setwd("/Users/paulviallard/Universite/M1/S2/Data_Mining/Project/")
@@ -17,3 +28,6 @@ source("proba/role.r")
 
 # We compute the all means of the stats
 source("proba/mean.r", print.eval=TRUE)
+
+# We do a basket analysis
+source("proba/basket.r") 
