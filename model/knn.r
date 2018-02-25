@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+library(class)
+
 model.create_model = function(fun) {
   if(!file.exists(model.file)) {
     model.final = fun
@@ -18,10 +20,7 @@ dataset_stats.test = dataset_stats.data[-dataset_stats.sample,]
 dataset_stats.train_label = dataset_stats.label[dataset_stats.sample]
 dataset_stats.test_label = dataset_stats.label[-dataset_stats.sample]
 
-model.file = "model/svm_linear.rds"
-dataset_stats.svm = model.create_model(svm(dataset_stats.train_label ~ ., data=dataset_stats.train, method="linear"))
- 
+# 
+dataset_stats.knn_predict = knn(dataset_stats.train, dataset_stats.test, dataset_stats.train_label, k = 1)
 
-dataset_stats.svm_predict = predict(dataset_stats.tree_entropy, newdata = dataset_stats.test, type="vector")-1
-
-confusionMatrix(dataset_stats.tree_ent_predict, dataset_stats.test_label)
+confusionMatrix(dataset_stats.knn_predict, dataset_stats.test_label)

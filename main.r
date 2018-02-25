@@ -14,11 +14,13 @@ library(e1071)
 
 library(caret)
 
+library(keras)
+
 rm(list=ls())
 setwd("/Users/paulviallard/Universite/M1/S2/Data_Mining/Project/")
 
 # We export the datasets from the database
-source("proba/export.r")
+source("data/export.r")
 
 # We compute the frequencies for the dataset with the bans and the champs
 source("proba/freq.r", print.eval=TRUE)
