@@ -3,3 +3,5 @@
 *.log
 *.out
 *.pdf
+*.hdf5
+*.rds
