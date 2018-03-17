@@ -16,7 +16,7 @@ DatasetTransactionItem = R6Class("DatasetTransactionItem",
         # We will export the dataset from MySQL
         super$initialize(dbname, username, password)
       } else {
-        # If we have already a dataset we can set the different 
+        # If we already have a dataset we can set the different 
         # exported dataset
         self$item = dataset$item
       }

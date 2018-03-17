@@ -129,8 +129,8 @@ DatasetStats = R6Class("DatasetStats",
       
           print(id)
 
-          # We get who win and we turn into somethings easier for the new representation
-          # The new variable will be 1 if the first team win and 0 otherwise
+          # We get who win and we turn into something easier for the new representation
+          # The new variable will be 1 if the first team wins and 0 otherwise
           if(self$player[(i+1), "win"] == 1) {
             win = 1
           } else {
@@ -166,7 +166,7 @@ DatasetStats = R6Class("DatasetStats",
     },
 
     export_team = function() {
-      # The function will a dataset with the statistics of the teams
+      # The function will be a dataset with the statistics of the teams
 
       # We take the columns of the dataset without the shared columns 
       column = colnames(self$team)
@@ -235,7 +235,7 @@ DatasetStats = R6Class("DatasetStats",
       column_without = c("id", "win", "duration", "name", "role", "position")
       column = column[! column %in% column_without]
  
-      # We create a vector of zeros which has the same length of the columns
+      # We create a vector of zeros which has the same length as the columns
       zero = rep(0, length(column))
       row_top = zero
       row_mid = zero 
@@ -272,7 +272,7 @@ DatasetStats = R6Class("DatasetStats",
         row_jungle = unname(unlist(row))
       }
 
-      # We have now a vector with zeros except where there are the role of the champion
+      # We have now a vector with zeros except where there is the champion
       # We fed the vector with the data of the original dataset
       c(row_top, row_mid, row_jungle, row_supp, row_carry)
     },
@@ -295,13 +295,13 @@ DatasetStats = R6Class("DatasetStats",
       number_row = nrow(self$stats)
       # We sample the dataset and we save it
       self$sample = private$export_sample(sort(sample(1:number_row, floor(0.6*number_row))), "dataset/sample_train.csv")
-      # The first part will nbe the training set (60% of the original one)
+      # The first part will be the training set (60% of the original one)
       self$train = as.matrix(self$stats[self$sample, ])
 
       # It remains now 40%
       remain = self$stats[-self$sample,]
 
-      # We sample in two part the remaining dataset and we save it
+      # We sample in two parts the remaining dataset and we save it
       sample_remain = private$export_sample(sort(sample(1:nrow(remain), floor(0.5*nrow(remain)))), "dataset/sample_validation_test.csv")
 
       # The second part will be the validation set
@@ -317,7 +317,7 @@ DatasetStats = R6Class("DatasetStats",
     },
 
     export_sample = function(fun, file) {
-      # If the dataset sample exist
+      # If the dataset sample exists
       if(file.exists(file)) {
         # We read the file and we export it
         sample = private$read(file)

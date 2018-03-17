@@ -73,8 +73,8 @@ ModelNNet = R6Class("ModelNNet",
       self$predict(validation = TRUE)
       accuracy_best = self$get_accuracy() 
 
-      # If a file exist we can take the model 
-      # as reference for the accuracy 
+      # If a file exists we can take the model 
+      # as a reference for the accuracy 
       if((!is.null(private$file)) && file.exists(private$file)) {
         model_file = self$load(private$file)
         self$predict(validation = TRUE)

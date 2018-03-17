@@ -17,7 +17,7 @@ Dataset = R6Class("Dataset",
       # We create a MySQL connection
       private$conn = dbConnect(MySQL(), dbname=dbname, username = username, password = password)
    
-      # If the datasets is not imported in MySQL
+      # If the datasets are not imported in MySQL
       if(!private$is_imported()) {
         # We drop the table in the database
         private$drop_dataset()
@@ -127,7 +127,7 @@ Dataset = R6Class("Dataset",
     },
 
     read_dataset = function(dataset, query) {
-      # If the file of the dataset exist
+      # If the file of the dataset exists
       if(file.exists(dataset)) {
         # We load in memory the dataset
         data = private$read(dataset)

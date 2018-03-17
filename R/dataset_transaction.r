@@ -25,7 +25,7 @@ DatasetTransaction = R6Class("DatasetTransaction",
       }
       # If the file with the matrix doesn't exist
       if(!file.exists("dataset/export_transaction.rds")) {
-        # We exported the matrix
+        # We export the matrix
         self$transaction = private$export()
         # and we save it
         saveRDS(self$transaction, file="dataset/export_transaction.rds")
@@ -65,7 +65,7 @@ DatasetTransaction = R6Class("DatasetTransaction",
         # We get the id of the games
         dataset_id = unique(self$champs[,"id"])
 
-        # We create a new dataset to store the item "Win" and "Loose"
+        # We create a new dataset to store the item "Win" and "Lose"
         transaction_win_lose = data.frame(matrix(0, nrow = 2*length(dataset_id), ncol = 2))
         colnames(transaction_win_lose) = c("id", "name")
 

@@ -17,7 +17,7 @@ Model = R6Class("Model",
     test_label = NULL,
 
     initialize = function(model = NULL, save_fun, load_fun, dataset = NULL, dbname = "lol", username = "root", password = "") {
-      # We store the functions which can save and load the model
+      # We store the functions which can be saved and load the model
       private$save_fun = save_fun
       private$load_fun = load_fun
       

@@ -36,7 +36,7 @@ ModelTree = R6Class("ModelTree",
       } else {
         # If we want to compute one tree
         if(grid_search == FALSE) {
-          # We will compute it with the parameters gave
+          # We will compute it with the parameters given 
           self$model = rpart(self$label ~ ., data = self$data, subset = dataset$sample, method = "class", parms = parms, minsplit = minsplit, minbucket = minbucket, cp=cp)
         } else {
           # Otherwise, we will perform a grid search
@@ -50,7 +50,7 @@ ModelTree = R6Class("ModelTree",
     },
 
     predict = function(model=NULL, validation = FALSE) {
-      # We will predict the model either on the test or valisation set
+      # We will predict the model either on the test or validation set
       if(is.null(model)) {
         model = self$model
       }
@@ -67,7 +67,7 @@ ModelTree = R6Class("ModelTree",
     },
 
     print_result = function(pred=NULL, validation=FALSE) {
-      # We print the confusion matrix either for the validation or test set
+      # We print the confusion matrix either for the validation or the test set
       if(!is.null(private$pred)) {
         if(validation == FALSE) {
           print(confusionMatrix(private$pred, self$test_label))
@@ -111,7 +111,7 @@ ModelTree = R6Class("ModelTree",
       cp_history = data.frame(matrix(0, nrow = private$try, ncol = 2))
       colnames(cp_history) = c("cp", "accuracy")
       
-      # We will create the list of models that we infered
+      # We will create the list of models that we inferred
       model_list = vector(mode="list", length=private$try)
       max = 0.0
       argmax = -1
@@ -141,7 +141,7 @@ ModelTree = R6Class("ModelTree",
       if(!is.null(private$grid_file)) {
         private$write(cp_history, private$grid_file)
       }
-      # We return the model where the accuracy was maximum
+      # We return the model where the accuracy was at its maximum
       model_list[[argmax]]
     },
 

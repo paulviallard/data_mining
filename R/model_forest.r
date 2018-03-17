@@ -17,7 +17,7 @@ ModelForest = R6Class("ModelForest",
         dataset = DatasetStats(dataset, dbname, username, password)
       }
 
-      # We can now save the dataset and the functions which is used to read and write the model
+      # We can now save the dataset and the functions which are used to read and write the model
       super$initialize(model, saveRDS, readRDS, dataset)
       
       # If the file exists,
