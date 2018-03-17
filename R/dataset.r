@@ -10,6 +10,7 @@ Dataset = R6Class("Dataset",
     bans = NULL,
     player = NULL,
     team = NULL,
+    item = NULL,
 
     initialize = function(dbname = "lol", username = "root", password = "") {
       # We export the dataset from the MySQL database
@@ -85,6 +86,9 @@ Dataset = R6Class("Dataset",
       # We export the dataset of the banned champions
       self$bans = private$read_dataset("dataset/export_bans.csv", paste("SELECT matches.id, champs.name FROM matches, teambans, champs WHERE matches.id = teambans.matchid AND teambans.championid = champs.id AND version = '", version, "'", sep=""))
 
+      # We export the item dataset
+      self$item = private$read_dataset("dataset/export_item.csv", paste("SELECT stats.win, champs.name, participants.role, participants.position, stats.item1, stats.item2, stats.item3, stats.item4, stats.item5, stats.item6, stats.trinket, participants.ss1, participants.ss2 FROM participants, stats, champs, matches WHERE participants.id = stats.id AND participants.championid = champs.id AND matches.id = participants.matchid AND version = '", version, "'", sep=""))
+
       # We export the player dataset
       self$player = private$read_dataset("dataset/export_player.csv", paste("SELECT matches.id, win, duration, champs.name, role, position, kills, deaths, assists, largestkillingspree, largestmultikill, killingsprees, longesttimespentliving, doublekills, triplekills, quadrakills, pentakills, totdmgdealt, magicdmgdealt, physicaldmgdealt, truedmgdealt, largestcrit, totdmgtochamp, magicdmgtochamp, physdmgtochamp, truedmgtochamp, totheal, totunitshealed, dmgselfmit, dmgtoobj, dmgtoturrets, visionscore, totdmgtaken, magicdmgtaken, physdmgtaken, truedmgtaken, goldearned, goldspent, turretkills, inhibkills, totminionskilled, neutralminionskilled, ownjunglekills, enemyjunglekills, totcctimedealt, champlvl, pinksbought, wardsplaced, wardskilled, firstblood FROM matches, participants, champs, stats WHERE matches.id = participants.matchid AND participants.championid = champs.id AND stats.id = participants.id AND version = '", version, "'", sep=""))
 
@@ -100,7 +104,8 @@ Dataset = R6Class("Dataset",
       tables = c(tables[,1])
 
       # We check if all the tables are imported
-      if (all(tables == c("champs", "matches", "participants", "stats", "teambans", "teamstats"))) {
+      required_tables = c("champs", "matches", "participants", "stats", "teambans", "teamstats")
+      if (length(tables) == length(required_tables) && all(tables == required_tables)) {
         imported = TRUE
       }
       imported
@@ -108,7 +113,7 @@ Dataset = R6Class("Dataset",
 
     drop_dataset = function() {
       # We drop all the tables if they exist
-      private$get_query("DROP TABLE IF EXISTS champs, matches, participants, stats, teambans, teamstats")
+      private$get_query("DROP TABLE IF EXISTS champs, matches, participants, stats, teambans, teamstats, item, summoner")
     },
 
     get_query = function(query) {

@@ -26,7 +26,7 @@ ModelForest = R6Class("ModelForest",
         self$model = self$load(file)
       } else {
         # otherwise, we can create it
-        self$model = randomForest(as.factor(dataset$stats_label) ~ . , data = dataset$stats, subset = dataset$sample, ntree = ntree)
+        self$model = randomForest(as.factor(dataset$stats_label) ~ . , data = dataset$stats, importance=TRUE, subset = dataset$sample, ntree = ntree)
       }
       # At the end, if the file doesn't exist,
       if((!is.null(file)) && (!file.exists(file))) {
@@ -49,6 +49,21 @@ ModelForest = R6Class("ModelForest",
       if(!is.null(self$predict)) {
         print(confusionMatrix(private$pred, self$test_label))
       }
+    },
+
+    print_importance = function(number) {
+      importance = data.frame(self$model$importance)
+      importance["feature"] = rownames(importance)
+      print(importance)
+      importance = importance[order(-importance$MeanDecreaseGini),]
+      importance = importance[1:number,]
+      
+      plot = ggplot(importance, aes(x=reorder(feature, MeanDecreaseGini), y=MeanDecreaseGini))
+      plot = plot + geom_bar(stat="identity", )
+      plot = plot + coord_flip()
+      plot = plot + theme(legend.text=element_text(size=5))
+      plot = plot + theme_bw(base_size=5)
+      plot 
     }
   ),
   private = list(

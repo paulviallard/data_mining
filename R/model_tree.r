@@ -145,6 +145,8 @@ ModelTree = R6Class("ModelTree",
       model_list[[argmax]]
     },
 
+    
+
     read = function(path) {
       # We will write a file
       file = NA

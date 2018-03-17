@@ -5,11 +5,15 @@ setwd("/Users/paulviallard/Universite/M1/S2/Data_Mining/Project/R")
 
 library(R6)
 
+source("dataset_item.r")
 source("dataset.r")
 source("dataset_transaction.r")
+source("dataset_transaction_item.r")
 source("dataset_stats.r")
 
 source("model_transaction.r")
+source("model_transaction_item.r")
+
 source("model_tree.r")
 source("model_forest.r")
 source("model_svm.r")
@@ -20,13 +24,20 @@ source("analysis_pca.r")
 source("analysis_cor.r")
 
 # We load the dataset into the memory
+dataset_item = DatasetItem$new()
 dataset = Dataset$new()
 dataset_transaction = DatasetTransaction$new(dataset)
+dataset_transaction_item = DatasetTransactionItem$new(dataset)
 dataset_stats = DatasetStats$new(dataset)
 
-# We do a basket analysis
+# We do a basket analysis on champions
 model_transaction = ModelTransaction$new(dataset_transaction)
 model_transaction$print()
+
+# We do a basket analysis on items
+model_transaction_item = ModelTransactionItem$new(dataset_transaction_item)
+model_transaction_item$print()
+
 
 # We analyse the frequencies
 analysis_freq = AnalysisFreq$new(dataset)
@@ -79,6 +90,7 @@ analysis_cor$print_player(team = 2, "carry")
 model_forest = ModelForest$new(ntree = 50, file="model/model_forest.rds", dataset = dataset_stats)
 model_forest$predict()
 model_forest$print()
+model_forest$print_importance(20)
 
 # We learn a SVM
 model_svm = ModelSVM$new(file="model/model_svm.rds", dataset = dataset_stats)

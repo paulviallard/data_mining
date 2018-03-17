@@ -66,20 +66,20 @@ DatasetTransaction = R6Class("DatasetTransaction",
         dataset_id = unique(self$champs[,"id"])
 
         # We create a new dataset to store the item "Win" and "Loose"
-        transaction_win_loose = data.frame(matrix(0, nrow = 2*length(dataset_id), ncol = 2))
-        colnames(transaction_win_loose) = c("id", "name")
+        transaction_win_lose = data.frame(matrix(0, nrow = 2*length(dataset_id), ncol = 2))
+        colnames(transaction_win_lose) = c("id", "name")
 
         j = 0
         for(id in dataset_id) {
           # We create the id of the winner (id:1) and the looser (id:0)
-          id_loose = paste(as.character(id),":","0", sep="")
+          id_lose = paste(as.character(id),":","0", sep="")
           id_win = paste(as.character(id),":","1", sep="")
 
           # We fill the dataset in 
           j = j+1 
-          transaction_win_loose[j,] = c(id_loose, "Loose")
+          transaction_win_lose[j,] = c(id_lose, "Lose")
           j = j+1
-          transaction_win_loose[j,] = c(id_win, "Win")
+          transaction_win_lose[j,] = c(id_win, "Win")
         }
 
         # We replace the column win by the new id
@@ -88,7 +88,7 @@ DatasetTransaction = R6Class("DatasetTransaction",
         transaction[,"win"] = NULL
 
         # We merge the two datasets
-        transaction = rbind(transaction, transaction_win_loose)
+        transaction = rbind(transaction, transaction_win_lose)
         # and we write our intermediate representation
         private$write(transaction, "dataset/export_transaction.csv")
       } else {

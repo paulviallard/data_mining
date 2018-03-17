@@ -15,7 +15,7 @@ ModelTransaction = R6Class("ModelTransaction",
     
     compute = function (support=0.005, confidence=0.501) {
       # We perform the algorithm
-      self$rule = apriori(private$dataset$transaction, parameter=list(support=support, confidence=confidence), appearance = list(rhs = c("Win", "Lose")))
+      self$rule = apriori(private$dataset$transaction, parameter=list(support=support, confidence=confidence), appearance = list(rhs = c("Win", "Loose")))
     },
     
     print = function(conf = 0.53) {
