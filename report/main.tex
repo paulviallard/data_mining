@@ -7,7 +7,8 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{amsfonts}
-\usepackage{amsmath}       
+\usepackage{amsmath}
+\usepackage{fourier}
 \usepackage{graphicx}
 \usepackage{wrapfig}
 \usepackage{lscape}
@@ -21,7 +22,7 @@
 \def\available#1{\champion_\mathcal{A}^{#1}}
 \def\team#1{\mathcal{T}_{#1}}
 \def\win{\text{Win}}
-\def\loose{\text{Loose}}
+\def\lose{\text{Lose}}
 \def\rules#1#2{#1 \rightarrow #2}
 \def\interest#1{\text{I}(#1)}
 \def\inTplay{\text{Pl}}
@@ -33,6 +34,10 @@
 \def\risk#1{R(#1)}
 \def\proba#1{P(#1)}
 \def\reg{\alpha}
+\def\summonerItem{\mathcal{I}}
+\def\summonerTrinket{\mathcal{V}}
+\def\summonerSpell{\mathcal{S}}
+\def\game{\mathcal{G}}
 
 \title{Can we predict the outcome of a match in League of Legends ? Yes, we can !}
 
@@ -70,7 +75,7 @@ Depending on the champions and the strategies of the two teams, the second phase
 
 \section{The data at our disposal}
 
-For our study, we have 6 exported tables from Kaggle\footnote{\url{https://www.kaggle.com/paololol/league-of-legends-ranked-matches}} coming from the statistics that the players can see after a match of \lol. Typically, we have the total damage, the kills, the assistances, \ldots. Moreover, we have more than 50 features for the statistics of a champion and 10 features to describe the performance of the team in general.
+For our study, we have 6 exported tables from Kaggle\footnote{\url{https://www.kaggle.com/paololol/league-of-legends-ranked-matches}} and two from the offical website\footnote{\url{http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/item.json}}\footnote{ \url{http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/summoner.json}} coming from the statistics that the players can see after a match of \lol. Typically, we have the total damage, the kills, the assistances, \ldots. Moreover, we have more than 50 features for the statistics of a champion and 10 features to describe the performance of the team in general.
 
 The first table, \emph{matches}, contains the general information of the match i.e. the ID of the match, the server where the match was played, the season and the version of the game when the match was played, the date of the beginning (in timestamp) and the duration of the match.
 
@@ -82,8 +87,10 @@ Likewise, we have a table \emph{teambans} which represent the champions banned d
 
 We also have the statistics of the team: the table \emph{teamstats}. The features in the table are the id of the match, the id of the team (either 100 or 200 as before), a Boolean which represents if the team had the first blood, and similarly for the first turret, the first inhibitor, the first baron, the first dragon and the first herald. Furthermore, we have the number of towers killed and similarly for the inhibitor, the baron, the dragon and the herald.
 
-Lastly, we have a table \emph{stats} which describes the actions of a participant. We have the id of the participant, we have a Boolean which tells us if the player wins the game, there is a list of 6 items and the trinket item (which was not used in this study), the number of kills, assistances and deaths. Associated to the kills, we also have the kill performance: there is the largest killing spree which is the largest number of kills without dying, the number of killing sprees (a killing spree performance begin after 3 kills), the largest multi kill which is the number of kills performed in a short period of time and the statistics over the all types of multi kills i.e the statistics of the double kills, triple kills, quadra kills, penta kills and the legendary kills (not used in this study). The table also contains some features about damages: we have the total damage dealt and similarly with the magic, physical and true damage, we have the same features but they describe the damage dealt to the champions, we have the damage taken by our champion, the largest critical strike and also the amount of life points healed or the number of units healed. 
+Lastly, we have a table \emph{stats} which describes the actions of a participant. We have the id of the participant, we have a Boolean which tells us if the player wins the game, there is a list of 6 items and the trinket item, the number of kills, assistances and deaths. Associated to the kills, we also have the kill performance: there is the largest killing spree which is the largest number of kills without dying, the number of killing sprees (a killing spree performance begin after 3 kills), the largest multi kill which is the number of kills performed in a short period of time and the statistics over the all types of multi kills i.e the statistics of the double kills, triple kills, quadra kills, penta kills and the legendary kills (not used in this study). The table also contains some features about damages: we have the total damage dealt and similarly with the magic, physical and true damage, we have the same features but they describe the damage dealt to the champions, we have the damage taken by our champion, the largest critical strike and also the amount of life points healed or the number of units healed. 
 Moreover, we have at our disposal some general statistics about the game: there are the longest time the champion spent living, the self mitigated damage, the damage dealt to the objectives (the Dragon, the Baron, the Herald\ldots), the damage dealt to the turrets, the total time where the champion was stuck by a crowd control spell, the total crowd control time dealt by the champion, a score of the vision that the champion have during the match, the gold earned and spent to buy items, the number of turrets kills, inhibitors destroyed, the total of monsters killed, the total of neutral monsters killed, the own jungle monsters killed, the enemy jungle monsters killed, the level of the champion, the number of pink wards bought, the number of wards bought, the number of wards placed, the number of wards killed and finally a Boolean which represents if the champion had the first kill.
+
+The data coming from the official website contains the name of the items, the name of the trinket (it is an object which permits to have a circular vision of your environment from where you're standing) and the name of the player spells.
 
 In this study, we used the matches of the version \version. Indeed, the statistics of the champions change every version, then the statistics we did would change as well.
 
@@ -93,15 +100,15 @@ Let $\champion$ be the set of champions that are available in \lol, $\ban \subse
 
 The game use a specific order for the pick phase: alternatively, two players of a team will choose their champions. Thus, the set of champions for the teams is $\team{1} = \{c_2, c_3, c_6, c_7, c_{10}\}$ and $\team{2} = \{c_1, c_4, c_5, c_8, c_9\}$.
 
-Before the beginning of the game, we can have an estimation of the outcome: if a champion has a bad winning rate (this is the number of games won over the number of games played) then we can estimate the outcome: we can compute the $P(\win|\team{t}'), \team{t}'\subset \team{t}$. To estimate this probability we can use the association rules, and obtain rules of the form $\rules{\team{t}'}{\{\win\}}$ or $\rules{\team{t}'}{\{\loose\}}$ and use the confidence.
+Before the beginning of the game, we can have an estimation of the outcome: if a champion has a bad winning rate (this is the number of games won over the number of games played) then we can estimate the outcome: we can compute the $P(\win|\team{t}'), \team{t}'\subset \team{t}$. To estimate this probability we can use the association rules, and obtain rules of the form $\rules{\team{t}'}{\{\win\}}$ or $\rules{\team{t}'}{\{\lose\}}$ and use the confidence.
 
-To mine with the association rules, we created a database $\database$ composed of $m$ games with the items $\items=\champion\cup\{\win,\loose\}$ and $\database = \{\team{w}^{(1)}, \team{l}^{(1)},\dots, \team{w}^{(m)}, \team{l}^{(m)}\}$, where $\team{w}^{(k)}=\team{i}^{(k)}\cup\{\win\}$ is the transaction which represents the team $i$ which won the match $k$ and $\team{l}^{(k)}=\team{j}^{(k)}\cup\{\loose\}$ the team $j$ which lost the match $k$. 
+To mine with the association rules, we created a database $\database$ composed of $m$ games with the items $\items=\champion\cup\{\win,\lose\}$ and $\database = \{\team{w}^{(1)}, \team{l}^{(1)},\dots, \team{w}^{(m)}, \team{l}^{(m)}\}$, where $\team{w}^{(k)}=\team{i}^{(k)}\cup\{\win\}$ is the transaction which represents the team $i$ which won the match $k$ and $\team{l}^{(k)}=\team{j}^{(k)}\cup\{\lose\}$ the team $j$ which lost the match $k$. 
 
-After computing the following results with the Apriori algorithm, we obtained some interesting rules: first of all, we got the win rate of the champions. Indeed, we had some rules of the form $\rules{\{c\}}{\{\win\}}$ or $\rules{\{c\}}{\{\loose\}}$ with $c\in\champion$. Secondly, we obtained some rules with a combination of champions in the right part and either $\win$ or $\loose$ in the left side i.e $\rules{\champion'}{\{\win\}}$ or $\rules{\champion'}{\{\loose\}}$ with $\champion'\subset\champion$. As we can notice, these rules are also interesting because we can know if a combination of champions (especially in the bot lane) is strong in a particular version.
+After computing the following results with the Apriori algorithm, we obtained some interesting rules: first of all, we got the win rate of the champions. Indeed, we had some rules of the form $\rules{\{c\}}{\{\win\}}$ or $\rules{\{c\}}{\{\lose\}}$ with $c\in\champion$. Secondly, we obtained some rules with a combination of champions in the right part and either $\win$ or $\lose$ in the left side i.e $\rules{\champion'}{\{\win\}}$ or $\rules{\champion'}{\{\lose\}}$ with $\champion'\subset\champion$. As we can notice, these rules are also interesting because we can know if a combination of champions (especially in the bot lane) is strong in a particular version.
 
 For the version \version, the following are examples of interesting rules:
 \begin{verbatim}
-    {Ryze}          => {Loose}  confidence: 0.6298434
+    {Ryze}          => {Lose}   confidence: 0.6298434
     {Ahri,Janna}    => {Win}    confidence: 0.5942783
     {Caitlyn,Janna} => {Win}    confidence: 0.5479134
 \end{verbatim}
@@ -109,6 +116,27 @@ We can remark that Ryze is not the champion to play in this version ... Indeed, 
 Furthermore, we had some rules with champions of different lanes: Janna is a support and Ahri is an AP Carry who is played at the middle lane. Thus, we guessed that the pair can be efficient in the team fights for example. After, we had rules with two champions in the same lane: the bottom lane. We can deduce that the two are good together in the lane phase of the game.
 
 It can be interesting if we look at the interest that a player can have to the champions. We defined the interest of a champion as $\interest{c}=\inTplay(c)+\inTban(c)$ where $c\in\champion$, $\inTplay$ is a function of $c$ which produce the frequency of choosing the champion and $\inTban$ is a function of $c$ which produce the frequency of banning the champion. We plotted the interest of a champion in the Figure~\ref{fig:freq}. Obviously, we can see that Ryze is not very interesting for the players or that Ahri is picked or banned a lot which is consistent with the previous results.
+
+\section{Using some items}
+
+We conduct another study on the items: indeed, it can be interesting to observe if there are some strong item for a particular version. Moreover, the statistics of the items is also regularly up to date which means that some items can be very strong for a certain amount of time.\\ 
+
+Let $\summonerSpell$ the set of player spells which is available in \lol. It is composed of 12 elements i.e $\summonerSpell = \{\text{Barrier}, \text{Clarity}, \text{Cleanse}, \text{Exhaust}, \text{Flash}, \text{Ghost}, \text{Heal}, \text{Ignite}, \text{Mark}, \text{Dash}, \text{Smite}\\, \text{Teleport}\}$. During the pick phase, a player $j\in\left[1,10\right]$ has to take 2 different spells $s_{1,j}\in\summonerSpell$, $s_{2,j}\in\summonerSpell$ which can be useful later during the match. 
+Furthermore, in the game, the player $j$ can take a trinket $t_j\in \summonerTrinket$ and 6 items $i_{1,j},\dots, i_{6,j}\in \summonerItem$ where $\summonerTrinket$ is the set of trinkets and $\summonerItem$ the set of item provide by \lol. 
+Let $f_{j}$ the function which return the outcome of the match for the player $j$. 
+
+We created a database $\database$ composed of $m$ games where $\database=\{\game^{(1)}_1\dots\game^{(m)}_{10}\}$ and $\game^{(k)}_{j}=\{c_j^{(k)}, t_j^{(k)}, i_{1,j}^{(k)},\dots, i_{6,j}^{(k)}, s_{1,j}^{(k)}, s_{2,j}^{(k)}, f_j^{(k)}\}$ is the statistics of the game $k$ for the player $j$.
+
+We obtained the following results:
+
+\begin{verbatim}
+    {item6=Rabadon's Deathcap}  => {win=Win}    confidence: 0.6549605
+    {item6=Guardian Angel}      => {win=Win}    confidence: 0.6458249
+    {item5=Ardent Censer}       => {win=Win}    confidence: 0.6312394
+    {item5=The Bloodthirster}   => {win=Win}    confidence: 0.6301214
+\end{verbatim}
+
+The rules are interesting because we can see a winning rate for some items. In the version \version, we can see that some items are very strong: for example the Gardian Angel has a win rate of 64.58\% when it is used as last item.
 
 \section{Predicting the outcome}
 To predict the outcome of a match, we will now consider only the statistics of the match i.e the algorithms will not use the pick phase information. We constructed a new dataset $\database$ constituted only by numeric values. Let define the new dataset as $\database=\{(x^{(i)}, y^{(i)})\}_{i=1}^{m}$ where $m$ is the number of game.\\ 
@@ -162,7 +190,7 @@ When we look at the tree, we can notice that this is not the total damage of the
 
 Likewise, we obtained the same results with the tree inferred with the gini index using the grid search.
 
-Finally, we inferred a random forest which has good results. After testing manually (due to the time it take to compute the model), the best parameter for the number of trees was 50. Random forest was our best model with an accuracy of 98.19\% with the test data. 
+Finally, we inferred a random forest which has good results. After testing manually (due to the time it takes to compute the model), the best parameter for the number of trees was 50. Random forest was one of our best model with an accuracy of 98.19\% with the test data. Moreover, we plotted the importance of the feature i.e we printed the 20 best features where the decrease in Gini index is the most important in average. In the Figure~\ref{fig:importance}, we can notice that the results are consistent with the simple tree: the most important feature is the tower kills and the features which are related to. 
 
 \subsection{Inferring neural networks}
 
@@ -223,6 +251,12 @@ To predict the outcome of the game we can use the random forest: the majority vo
     \includegraphics[scale=0.45]{cor2.png}
     \caption{The correlation matrix of the table \emph{stats} for the role top which is stored in $x_{\mathcal{T}1}$}
     \label{fig:cor2}
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure}[ht]
+    \includegraphics[scale=0.45]{importance.png}
+    \caption{The 20 best important features}
+    \label{fig:importance}
 \end{sidewaysfigure}
 
 \end{document}
