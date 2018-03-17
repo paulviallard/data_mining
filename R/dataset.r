@@ -113,7 +113,7 @@ Dataset = R6Class("Dataset",
 
     drop_dataset = function() {
       # We drop all the tables if they exist
-      private$get_query("DROP TABLE IF EXISTS champs, matches, participants, stats, teambans, teamstats, item, summoner")
+      private$get_query("DROP TABLE IF EXISTS champs, matches, participants, stats, teambans, teamstats")
     },
 
     get_query = function(query) {
